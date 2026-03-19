@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-tf2-ros \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     ros-${ROS_DISTRO}-rmw-fastrtps-cpp \
-    libgl1-mesa-glx libx11-6 libxcb1 libxkbcommon0 \
+    libgl1 libx11-6 libxcb1 libxkbcommon0 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://pixi.sh/install.sh | PIXI_NO_PATH_UPDATE=1 bash \
