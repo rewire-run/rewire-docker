@@ -1,0 +1,6 @@
+# Pixi
+.pixi/
+
+# macOS
+.DS_Store
+data/

@@ -1,0 +1,83 @@
+# Rewire E2E scenarios
+#
+# Usage:
+#   docker compose --profile dds up           # DDS multicast (default ROS 2)
+#   docker compose --profile zenoh up         # Full Zenoh (rmw_zenoh_cpp + router)
+#   docker compose --profile zenoh-bridge up  # DDS nodes + zenoh-bridge-ros2dds
+
+services:
+
+  # --- DDS profile ---
+  # Standard ROS 2 DDS multicast discovery on a shared Docker bridge network.
+
+  talker:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: ros2 run demo_nodes_cpp talker
+    networks: [ros]
+    profiles: [dds]
+
+  rewire-dds:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: rewire record --all --save /data/recording.rrd
+    networks: [ros]
+    volumes: [./data:/data]
+    depends_on: [talker]
+    profiles: [dds]
+
+  # --- Zenoh profile ---
+  # ROS 2 nodes use rmw_zenoh_cpp, connecting to a central zenohd router.
+  # Rewire discovers topics via Zenoh.
+
+  zenoh-router:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: zenohd --no-multicast-scouting --listen tcp/0.0.0.0:7447
+    networks: [ros]
+    profiles: [zenoh]
+
+  talker-zenoh:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: ros2 run demo_nodes_cpp talker
+    environment:
+      RMW_IMPLEMENTATION: rmw_zenoh_cpp
+    networks: [ros]
+    depends_on: [zenoh-router]
+    profiles: [zenoh]
+
+  rewire-zenoh:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: rewire record --all --zenoh-connect tcp/zenoh-router:7447 --save /data/recording.rrd
+    networks: [ros]
+    volumes: [./data:/data]
+    depends_on: [talker-zenoh]
+    profiles: [zenoh]
+
+  # --- Zenoh Bridge profile ---
+  # ROS 2 nodes speak DDS on an isolated network. zenoh-bridge-ros2dds translates
+  # to Zenoh. Rewire is on a separate network and discovers topics only via Zenoh
+  # through the bridge.
+
+  talker-dds:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: ros2 run demo_nodes_cpp talker
+    networks: [dds]
+    profiles: [zenoh-bridge]
+
+  zenoh-bridge:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: zenoh-bridge-ros2dds
+    networks: [dds, zenoh]
+    depends_on: [talker-dds]
+    profiles: [zenoh-bridge]
+
+  rewire-zenoh-bridge:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: rewire record --all --zenoh-connect tcp/zenoh-bridge:7447 --save /data/recording.rrd
+    networks: [zenoh]
+    volumes: [./data:/data]
+    depends_on: [zenoh-bridge]
+    profiles: [zenoh-bridge]
+
+networks:
+  ros:
+  dds:
+  zenoh:
