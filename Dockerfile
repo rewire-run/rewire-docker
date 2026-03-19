@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf
     && rm /tmp/bridge.zip
 
 RUN ARCH=$(uname -m) \
-    && curl -fsSL "https://releases.rewire.run/rewire-${REWIRE_VERSION}-${ARCH}-unknown-linux-gnu.tar.gz" \
+    && curl -fsSL "https://github.com/rewire-run/rewire/releases/download/v${REWIRE_VERSION}/rewire-${REWIRE_VERSION}-${ARCH}-unknown-linux-gnu.tar.gz" \
     | tar xz -C /usr/local/bin/
 
 WORKDIR /
