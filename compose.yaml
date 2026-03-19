@@ -1,0 +1,17 @@
+services:
+  talker:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: ros2 run demo_nodes_cpp talker
+    networks: [ros]
+
+  rewire:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: rewire record --all --save /data/recording.rrd
+    networks: [ros]
+    volumes:
+      - ./data:/data
+    depends_on:
+      - talker
+
+networks:
+  ros:
