@@ -2,6 +2,7 @@
 #
 # Usage:
 #   docker compose --profile dds up           # DDS multicast (default ROS 2)
+#   docker compose --profile viewer up        # DDS + connect to Rerun viewer on host
 #   docker compose --profile zenoh up         # Full Zenoh (rmw_zenoh_cpp + router)
 #   docker compose --profile zenoh-bridge up  # DDS nodes + zenoh-bridge-ros2dds
 
@@ -23,6 +24,25 @@ services:
     volumes: [./data:/data]
     depends_on: [talker]
     profiles: [dds]
+
+  # --- Viewer profile ---
+  # Same as DDS but connects to a Rerun viewer running on the host.
+  # Start Rerun on your host first: rerun
+
+  talker-viewer:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: ros2 run demo_nodes_cpp talker
+    networks: [ros]
+    profiles: [viewer]
+
+  rewire-viewer:
+    image: ghcr.io/rewire-run/rewire:humble
+    command: rewire record --all --connect rerun+http://host.docker.internal:9876/proxy
+    networks: [ros]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on: [talker-viewer]
+    profiles: [viewer]
 
   # --- Zenoh profile ---
   # ROS 2 nodes use rmw_zenoh_cpp, connecting to a central zenohd router.

@@ -11,6 +11,9 @@
   <a href="https://github.com/rewire-run/rewire/releases/latest">
     <img alt="Version" src="https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Freleases.rewire.run%2Fversion.txt&search=%5Cd%2B%5C.%5Cd%2B%5C.%5Cd%2B&label=version&prefix=v&color=green">
   </a>
+  <a href="https://pixi.sh">
+    <img alt="Powered by" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json">
+  </a>
   <a href="https://ghcr.io/rewire-run/rewire">
     <img alt="GHCR" src="https://img.shields.io/badge/ghcr.io-rewire--run%2Frewire-blue">
   </a>
