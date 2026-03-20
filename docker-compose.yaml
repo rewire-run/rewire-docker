@@ -4,7 +4,6 @@
 #   docker compose --profile dds up           # DDS multicast (default ROS 2)
 #   docker compose --profile viewer up        # DDS + connect to Rerun viewer on host
 #   docker compose --profile zenoh up         # Full Zenoh (rmw_zenoh_cpp + router)
-#   docker compose --profile zenoh-bridge up  # DDS nodes + zenoh-bridge-ros2dds
 
 services:
 
@@ -59,7 +58,7 @@ services:
     command: ros2 run demo_nodes_cpp talker
     environment:
       RMW_IMPLEMENTATION: rmw_zenoh_cpp
-    networks: [ros]
+    network_mode: "service:zenoh-router"
     depends_on: [zenoh-router]
     profiles: [zenoh]
 
@@ -71,33 +70,5 @@ services:
     depends_on: [talker-zenoh]
     profiles: [zenoh]
 
-  # --- Zenoh Bridge profile ---
-  # ROS 2 nodes speak DDS on an isolated network. zenoh-bridge-ros2dds translates
-  # to Zenoh. Rewire is on a separate network and discovers topics only via Zenoh
-  # through the bridge.
-
-  talker-dds:
-    image: ghcr.io/rewire-run/rewire:humble
-    command: ros2 run demo_nodes_cpp talker
-    networks: [dds]
-    profiles: [zenoh-bridge]
-
-  zenoh-bridge:
-    image: ghcr.io/rewire-run/rewire:humble
-    command: zenoh-bridge-ros2dds
-    networks: [dds, zenoh]
-    depends_on: [talker-dds]
-    profiles: [zenoh-bridge]
-
-  rewire-zenoh-bridge:
-    image: ghcr.io/rewire-run/rewire:humble
-    command: rewire record --all --zenoh-connect tcp/zenoh-bridge:7447 --save /data/recording.rrd
-    networks: [zenoh]
-    volumes: [./data:/data]
-    depends_on: [zenoh-bridge]
-    profiles: [zenoh-bridge]
-
 networks:
   ros:
-  dds:
-  zenoh:
