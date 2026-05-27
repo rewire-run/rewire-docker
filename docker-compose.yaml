@@ -11,13 +11,13 @@ services:
   # Standard ROS 2 DDS multicast discovery on a shared Docker bridge network.
 
   talker:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: ros2 run demo_nodes_cpp talker
     networks: [ros]
     profiles: [dds]
 
   rewire-dds:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: rewire record --all --save /data/recording.rrd
     networks: [ros]
     volumes: [./data:/data]
@@ -29,13 +29,13 @@ services:
   # Start Rerun on your host first: rerun
 
   talker-viewer:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: ros2 run demo_nodes_cpp talker
     networks: [ros]
     profiles: [viewer]
 
   rewire-viewer:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: rewire record --all --connect rerun+http://host.docker.internal:9876/proxy
     networks: [ros]
     extra_hosts:
@@ -48,13 +48,13 @@ services:
   # Rewire discovers topics via Zenoh.
 
   zenoh-router:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: zenohd --no-multicast-scouting --listen tcp/0.0.0.0:7447
     networks: [ros]
     profiles: [zenoh]
 
   talker-zenoh:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: ros2 run demo_nodes_cpp talker
     environment:
       RMW_IMPLEMENTATION: rmw_zenoh_cpp
@@ -63,7 +63,7 @@ services:
     profiles: [zenoh]
 
   rewire-zenoh:
-    image: ghcr.io/rewire-run/rewire:humble
+    image: rewirerun/rewire:humble
     command: rewire record --all --zenoh-connect tcp/zenoh-router:7447 --save /data/recording.rrd
     networks: [ros]
     volumes: [./data:/data]

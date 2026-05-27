@@ -14,8 +14,8 @@
   <a href="https://pixi.sh">
     <img alt="Powered by" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json">
   </a>
-  <a href="https://ghcr.io/rewire-run/rewire">
-    <img alt="GHCR" src="https://img.shields.io/badge/ghcr.io-rewire--run%2Frewire-blue">
+  <a href="https://hub.docker.com/r/rewirerun/rewire">
+    <img alt="Docker Hub" src="https://img.shields.io/badge/Docker%20Hub-rewirerun%2Frewire-blue">
   </a>
 </p>
 
@@ -31,16 +31,16 @@ and zenoh-bridge-ros2dds.
 
 | Tag | ROS 2 | Architecture |
 |-----|-------|-------------|
-| `ghcr.io/rewire-run/rewire:humble` | Humble | amd64, arm64 |
-| `ghcr.io/rewire-run/rewire:jazzy` | Jazzy | amd64, arm64 |
+| `rewirerun/rewire:humble` | Humble | amd64, arm64 |
+| `rewirerun/rewire:jazzy` | Jazzy | amd64, arm64 |
 
 ## Quick Start
 
 ```bash
-docker pull ghcr.io/rewire-run/rewire:humble
+docker pull rewirerun/rewire:humble
 
-docker run --rm ghcr.io/rewire-run/rewire:humble rewire --version
-docker run --rm ghcr.io/rewire-run/rewire:humble rewire types
+docker run --rm rewirerun/rewire:humble rewire --version
+docker run --rm rewirerun/rewire:humble rewire types
 ```
 
 ## Docker Compose
@@ -60,21 +60,21 @@ Each profile starts a talker node and rewire, saving a recording to `./data/reco
 Start a ROS 2 node inside the container:
 
 ```bash
-docker run --rm --network host ghcr.io/rewire-run/rewire:humble \
+docker run --rm --network host rewirerun/rewire:humble \
     ros2 run demo_nodes_cpp talker
 ```
 
 In another terminal, bridge to Rerun:
 
 ```bash
-docker run --rm --network host ghcr.io/rewire-run/rewire:humble \
+docker run --rm --network host rewirerun/rewire:humble \
     rewire record --all
 ```
 
 ## Save a Recording
 
 ```bash
-docker run --rm --network host -v $(pwd)/data:/data ghcr.io/rewire-run/rewire:humble \
+docker run --rm --network host -v $(pwd)/data:/data rewirerun/rewire:humble \
     rewire record --all --save /data/recording.rrd
 ```
 
@@ -85,13 +85,13 @@ xhost +local:docker
 docker run --rm --network host \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
-    ghcr.io/rewire-run/rewire:humble rewire record --all
+    rewirerun/rewire:humble rewire record --all
 ```
 
 ## Interactive Shell
 
 ```bash
-docker run --rm -it --network host ghcr.io/rewire-run/rewire:humble bash
+docker run --rm -it --network host rewirerun/rewire:humble bash
 ```
 
 ROS 2 is already sourced. Run any ROS 2 or rewire command directly.
@@ -115,7 +115,7 @@ ROS 2 is already sourced. Run any ROS 2 or rewire command directly.
 Verify everything works in one command:
 
 ```bash
-docker run --rm ghcr.io/rewire-run/rewire:humble bash -c '
+docker run --rm rewirerun/rewire:humble bash -c '
     ros2 run demo_nodes_cpp talker &
     sleep 3
     timeout 10 rewire record --all --save /tmp/test.rrd 2>&1
@@ -142,5 +142,5 @@ docker build --build-arg ROS_DISTRO=jazzy -t rewire:jazzy .
 | Argument | Default | Description |
 |----------|---------|-------------|
 | `ROS_DISTRO` | `humble` | ROS 2 distribution |
-| `REWIRE_VERSION` | `0.2.6` | Rewire release version |
+| `REWIRE_VERSION` | `0.3.1` | Rewire release version |
 | `ZENOH_BRIDGE_VERSION` | `1.8.0` | zenoh-bridge-ros2dds version |

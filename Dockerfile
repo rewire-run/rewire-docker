@@ -3,7 +3,7 @@ ARG ROS_DISTRO=humble
 FROM ros:${ROS_DISTRO}-ros-base
 
 ARG ROS_DISTRO
-ARG REWIRE_VERSION=0.2.6
+ARG REWIRE_VERSION=0.3.1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
